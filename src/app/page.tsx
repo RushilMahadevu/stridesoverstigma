@@ -1,10 +1,21 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 export default function Home() {
   const mapRef = useRef(null);
+  
+  // Add smooth scrolling with CSS
+  useEffect(() => {
+    // Add scroll-behavior: smooth to html element
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Cleanup function to remove the style when component unmounts
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, []);
 
   // Animation variants
   const fadeIn = {
@@ -28,27 +39,27 @@ export default function Home() {
     <main className="min-h-screen bg-white text-black">
       {/* Header */}
       <motion.header 
-        className="w-full px-6 py-4 flex justify-between items-center text-sm fixed top-0 bg-white z-10"
+        className="w-full px-6 py-4 flex justify-between items-center text-sm fixed top-0 bg-white z-10 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div className="font-semibold">Strides Over Stigma</div>
         <nav className="space-x-4">
-          <a href="#home" className="hover:underline">
+          <a href="#home" className="hover:underline transition-colors duration-200">
             Home
           </a>
-          <a href="#mission" className="hover:underline">
+          <a href="#mission" className="hover:underline transition-colors duration-200">
             Mission
           </a>
-          <a href="#courses-routes" className="hover:underline">
+          <a href="#courses-routes" className="hover:underline transition-colors duration-200">
             Routes
           </a>
-          <a href="#registration" className="hover:underline">
+          <a href="#registration" className="hover:underline transition-colors duration-200">
             Register
           </a>
-          <a href="#about" className="hover:underline">
-            About
+          <a href="#about" className="hover:underline transition-colors duration-200">
+            About 
           </a>
         </nav>
         <div className="hidden md:flex flex-col items-end">
