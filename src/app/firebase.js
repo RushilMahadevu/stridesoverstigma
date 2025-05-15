@@ -22,4 +22,11 @@ const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { app, analytics, db, auth };
+// Simple admin authentication
+const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
+const verifyAdminPassword = (password) => {
+  return password === adminPassword;
+};
+
+export { app, analytics, db, auth, verifyAdminPassword };
