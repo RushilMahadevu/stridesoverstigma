@@ -52,8 +52,8 @@ export default function Home() {
           <a href="#mission" className="hover:underline transition-colors duration-200">
             Mission
           </a>
-          <a href="#courses-routes" className="hover:underline transition-colors duration-200">
-            Routes
+          <a href="#events" className="hover:underline transition-colors duration-200">
+            Events
           </a>
           <a href="#registration" className="hover:underline transition-colors duration-200">
             Register
@@ -116,10 +116,10 @@ export default function Home() {
             Our Mission
           </a>
           <a 
-            href="#courses-routes" 
+            href="#events" 
             className="border border-black px-6 py-3 rounded-full text-sm bg-white text-black hover:bg-black hover:text-white transition-colors duration-300"
           >
-            Explore Our Routes
+            Upcoming Events
           </a>
         </motion.div>
       </motion.section>
@@ -226,7 +226,7 @@ export default function Home() {
       
       {/* Second Page - Map Section */}
       <motion.section 
-        id="courses-routes"
+        id="events"
         ref={mapRef}
         className="min-h-screen px-6 flex flex-col justify-center items-center py-20 text-center"
         initial={{ opacity: 0 }}
@@ -241,7 +241,7 @@ export default function Home() {
           viewport={{ once: false }}
           transition={{ duration: 0.8 }}
         >
-          Courses & Routes
+          Upcoming Events
         </motion.h2>
         <motion.div 
           className="aspect-video w-full max-w-4xl mx-auto"
