@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { saveRegistration } from "./utils/registration";
 
 export default function Home() {
   const mapRef = useRef(null);
@@ -32,6 +33,131 @@ export default function Home() {
       y: 0, 
       opacity: 1,
       transition: { duration: 0.8 }
+    }
+  };
+
+  // Form state with proper TypeScript types
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    event: "",
+    shirtSize: "",
+    agreeToTerms: false
+  });
+
+  // Add explicit type for formStatus
+  const [formStatus, setFormStatus] = useState<{
+    loading: boolean;
+    success: boolean;
+    error: string | null;
+  }>({
+    loading: false,
+    success: false,
+    error: null
+  });
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value, type } = e.target;
+    
+    // Handle checkbox inputs separately
+    if (type === "checkbox") {
+      const target = e.target as HTMLInputElement; // Type assertion for checkbox
+      setFormData(prevData => ({
+        ...prevData,
+        [id]: target.checked
+      }));
+    } else {
+      // Handle text inputs and selects
+      setFormData(prevData => ({
+        ...prevData,
+        [id]: value
+      }));
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.agreeToTerms) {
+      setFormStatus({
+        loading: false,
+        success: false,
+        error: "Please agree to the terms and conditions."
+      });
+      return;
+    }
+    
+    try {
+      setFormStatus({ loading: true, success: false, error: null });
+      
+      // Get event fee based on selection
+      let eventFee = 0;
+      switch (formData.event) {
+        case "5k":
+          eventFee = 35;
+          break;
+        case "10k":
+          eventFee = 45;
+          break;
+        case "half":
+          eventFee = 65;
+          break;
+        default:
+          throw new Error("Please select a valid event");
+      }
+      
+      // Save registration to Firebase
+      await saveRegistration({
+        ...formData,
+        eventFee,
+        status: "registered", // initial status
+        paymentStatus: "pending" // could be updated later when payment is processed
+      });
+      
+      // Reset form and show success message
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        event: "",
+        shirtSize: "",
+        agreeToTerms: false
+      });
+      
+      setFormStatus({
+        loading: false,
+        success: true,
+        error: null
+      });
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setFormStatus(prev => ({ ...prev, success: false }));
+      }, 5000);
+      
+    } catch (error) {
+      console.error("Registration error:", error);
+      // Provide more specific error message
+      let errorMessage = "Registration failed. Please try again.";
+      
+      // Check if it's a Firebase error
+      if (error instanceof Error) {
+        if (error.message.includes("permissions")) {
+          errorMessage = "Server configuration error. Please contact support.";
+        } else if (error.message.includes("network")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        }
+      }
+      
+      setFormStatus({
+        loading: false,
+        success: false,
+        error: errorMessage
+      });
     }
   };
 
@@ -281,13 +407,35 @@ export default function Home() {
           <p className="text-lg mb-8">Sign up for our upcoming community run events</p>
         
           <div className="bg-white p-8 rounded-lg shadow-lg">
-            <form className="space-y-6 text-left">
+            {formStatus.success && (
+              <motion.div 
+                className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p>Thank you for registering! We&apos;ve received your information.</p>
+              </motion.div>
+            )}
+            
+            {formStatus.error && (
+              <motion.div 
+                className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p>{formStatus.error}</p>
+              </motion.div>
+            )}
+            
+            <form className="space-y-6 text-left" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                   <input
                     type="text"
                     id="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                     required
                   />
@@ -297,6 +445,8 @@ export default function Home() {
                   <input
                     type="text"
                     id="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                     required
                   />
@@ -307,6 +457,8 @@ export default function Home() {
                 <input
                   type="email"
                   id="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
@@ -316,6 +468,8 @@ export default function Home() {
                 <label htmlFor="event" className="block text-sm font-medium text-gray-700 mb-1">Select Event</label>
                 <select
                   id="event"
+                  value={formData.event}
+                  onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
@@ -329,6 +483,8 @@ export default function Home() {
                 <label htmlFor="shirtSize" className="block text-sm font-medium text-gray-700 mb-1">T-Shirt Size</label>
                 <select
                   id="shirtSize"
+                  value={formData.shirtSize}
+                  onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
@@ -344,23 +500,26 @@ export default function Home() {
             
               <div className="flex items-start">
                 <input
-                  id="terms"
+                  id="agreeToTerms"
                   type="checkbox"
+                  checked={formData.agreeToTerms}
+                  onChange={handleInputChange}
                   className="h-4 w-4 mt-1 text-black focus:ring-black border-gray-300 rounded cursor-pointer"
                   required
                 />
-                <label htmlFor="terms" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="agreeToTerms" className="ml-2 text-sm text-gray-700">
                   I agree to the <a href="#" className="text-black underline">terms and conditions</a> and acknowledge the <a href="#" className="text-black underline">waiver of liability</a>
                 </label>
               </div>
             
               <motion.button
                 type="submit"
-                className="w-full bg-black text-white py-3 px-6 rounded-md cursor-pointer hover:bg-gray-800 transition-colors duration-300"
+                className="w-full bg-black text-white py-3 px-6 rounded-md cursor-pointer hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-400"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                disabled={formStatus.loading}
               >
-                Register Now
+                {formStatus.loading ? "Processing..." : "Register Now"}
               </motion.button>
             </form>
           
