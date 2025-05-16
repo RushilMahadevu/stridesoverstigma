@@ -161,6 +161,8 @@ export default function Home() {
     }
   };
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen bg-white text-black">
       {/* Header */}
@@ -171,40 +173,60 @@ export default function Home() {
         transition={{ duration: 0.5 }}
       >
         <div className="font-semibold">Strides Over Stigma</div>
-        <nav className="space-x-4">
-          <a href="#home" className="hover:underline transition-colors duration-200">
-            Home
-          </a>
-          <a href="#mission" className="hover:underline transition-colors duration-200">
-            Mission
-          </a>
-          <a href="#events" className="hover:underline transition-colors duration-200">
-            Events
-          </a>
-          <a href="#registration" className="hover:underline transition-colors duration-200">
-            Register
-          </a>
-          <a href="#about" className="hover:underline transition-colors duration-200">
-            About 
-          </a>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex space-x-4">
+          <a href="#home" className="hover:underline transition-colors duration-200">Home</a>
+          <a href="#mission" className="hover:underline transition-colors duration-200">Mission</a>
+          <a href="#events" className="hover:underline transition-colors duration-200">Events</a>
+          <a href="#registration" className="hover:underline transition-colors duration-200">Register</a>
+          <a href="#about" className="hover:underline transition-colors duration-200">About</a>
         </nav>
+        
+        {/* Mobile Menu Button */}
+        <button 
+          className="md:hidden text-black"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+        
+        {/* Contact Info */}
         <div className="hidden md:flex flex-col items-end">
-          <a 
-            href="mailto:stridesoverstigma@gmail.com"
-            className="hover:text-gray-700 transition-colors duration-200"
-          >
+          <a href="mailto:stridesoverstigma@gmail.com" className="hover:text-gray-700 transition-colors duration-200">
             stridesoverstigma@gmail.com
           </a>
-          <a
-            href="https://www.instagram.com/strides.over.stigma/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-black hover:text-gray-700 transition-colors duration-200"
-          >
+          <a href="https://www.instagram.com/strides.over.stigma/" target="_blank" rel="noopener noreferrer" className="text-black hover:text-gray-700 transition-colors duration-200">
             @strides.over.stigma
           </a>
         </div>
       </motion.header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-white z-20 pt-16 px-6 md:hidden">
+          <nav className="flex flex-col space-y-6 text-center text-lg">
+            <a href="#home" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Home</a>
+            <a href="#mission" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Mission</a>
+            <a href="#events" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Events</a>
+            <a href="#registration" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Register</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">About</a>
+            
+            <div className="pt-6 border-t border-gray-200">
+              <a href="mailto:stridesoverstigma@gmail.com" className="block py-2">stridesoverstigma@gmail.com</a>
+              <a href="https://www.instagram.com/strides.over.stigma/" target="_blank" rel="noopener noreferrer" className="block py-2">@strides.over.stigma</a>
+            </div>
+          </nav>
+        </div>
+      )}
 
       {/* First Page - Hero Section */}
       <motion.section 
