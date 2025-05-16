@@ -98,14 +98,14 @@ export default function Home() {
       let eventFee = 0;
       switch (formData.event) {
         case "5k":
-          eventFee = 35;
+          eventFee = 0;
           break;
-        case "10k":
-          eventFee = 45;
-          break;
-        case "half":
-          eventFee = 65;
-          break;
+        // case "10k":
+        //   eventFee = 45;
+        //   break;
+        // case "half":
+        //   eventFee = 65;
+        //   break;
         default:
           throw new Error("Please select a valid event");
       }
@@ -306,11 +306,11 @@ export default function Home() {
               viewport={{ once: false }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <h3 className="text-xl font-semibold mb-4">Education & Resources</h3>
+              <h3 className="text-xl font-semibold mb-4">Awareness & Dialogue</h3>
               <p className="text-gray-700">
-                We provide access to mental health resources and education, partnering 
-                with local organizations to ensure our community members have the support 
-                they need both on and off the running path.
+                We promote mental health awareness through our running events and online presence. 
+                By creating spaces for open conversation and sharing educational content, we help 
+                break down stigmas and foster understanding within our running community.
               </p>
             </motion.div>
             
@@ -325,7 +325,7 @@ export default function Home() {
               <p className="text-gray-700">
                 Every stride we take is a step toward a world where mental health is 
                 prioritized and stigma-free. Through our events and fundraisers, we 
-                advocate for policies that support mental health awareness and treatment.
+                advocate for policies that support mental health awareness.
               </p>
             </motion.div>
           </div>
@@ -403,7 +403,7 @@ export default function Home() {
           viewport={{ once: false }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Race Registration</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Event Registration</h2>
           <p className="text-lg mb-8">Sign up for our upcoming community run events</p>
         
           <div className="bg-white p-8 rounded-lg shadow-lg">
@@ -474,9 +474,7 @@ export default function Home() {
                   required
                 >
                   <option value="">Choose an event</option>
-                  <option value="5k">Community 5K Run - June 15, 2025</option>
-                  <option value="10k">Mental Health Awareness 10K - July 20, 2025</option>
-                  <option value="half">Half Marathon - September 5, 2025</option>
+                  <option value="5k">Wetlands 5K - Date Coming Soon!</option>
                 </select>
               </div>
               <div>
@@ -524,7 +522,7 @@ export default function Home() {
             </form>
           
             <p className="mt-6 text-sm text-gray-600">
-              Registration fee: $35 for 5K, $45 for 10K, $65 for Half Marathon.
+              Registration fee: <span className="italic">To be announced</span>
               <br />
               All proceeds support mental health awareness programs.
             </p>
