@@ -1,9 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow anyone to register
+    // Allow reading registrations collection for admin dashboard
     match /registrations/{registrationId} {
-      allow read: if false; // Only allow reading through admin interfaces
+      allow read: if true; // Allow reading for admin dashboard
       allow create: if request.resource.data.size() > 0; // Allow creates with data
     }
     

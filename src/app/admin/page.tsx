@@ -4,12 +4,57 @@ import { useState } from 'react';
 import { verifyAdminPassword } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import { motion } from "framer-motion";
+import Link from 'next/link';
 
 // Define a type for registration data
 interface Registration {
   id: string;
   [key: string]: string | number | boolean | null | undefined; 
 }
+
+// Define Firebase Timestamp interface
+interface FirebaseTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+// Helper function to format timestamps with more specific typing
+const formatTimestamp = (value: string | Date | FirebaseTimestamp | unknown): string => {
+  try {
+    // Handle Firebase Timestamp objects
+    if (value && typeof value === 'object' && 'seconds' in value) {
+      const timestamp = value as FirebaseTimestamp;
+      const date = new Date(timestamp.seconds * 1000);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+    
+    // Handle date strings
+    if (typeof value === 'string' && !isNaN(Date.parse(value))) {
+      const date = new Date(value);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+    
+    // If it's neither, just return as string
+    return String(value);
+  } catch {
+    return String(value);
+  }
+};
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,79 +70,226 @@ export default function AdminPage() {
     } else {
       setError('Incorrect password');
     }
-  };
+  }; 
 
   const fetchRegistrations = async () => {
     try {
       const registrationsCollection = collection(db, 'registrations');
       const registrationsSnapshot = await getDocs(registrationsCollection);
+      
+      if (registrationsSnapshot.empty) {
+        console.log('No registrations found in database');
+        setRegistrations([]);
+        return;
+      }
+      
       const registrationsList = registrationsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Registration[];
+      
+      console.log('Fetched registrations:', registrationsList);
       setRegistrations(registrationsList);
     } catch (error) {
       console.error('Error fetching registrations:', error);
+      setError('Failed to load registration data');
+    }
+  };
+
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+  
+  const slideUp = {
+    hidden: { y: 25, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.8 }
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      
-      {!isAuthenticated ? (
-        <div className="max-w-md">
-          <h2 className="text-xl mb-4">Please enter admin password</h2>
-          <div className="mb-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Admin password"
-            />
-          </div>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
-          <button
-            onClick={handleLogin}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    <main className="min-h-screen bg-white text-black">
+      {/* Header */}
+      <motion.header 
+        className="w-full px-6 py-4 flex justify-between items-center text-sm fixed top-0 bg-white z-10 shadow-sm"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="font-semibold">Strides Over Stigma</div>
+        <nav className="space-x-4">
+          <Link href="/" className="hover:underline transition-colors duration-200">
+            Home
+          </Link>
+          <span className="font-medium">Admin Dashboard</span>
+        </nav>
+      </motion.header>
+
+      <div className="pt-20 pb-12 px-6 max-w-6xl mx-auto">
+        <motion.h1 
+          className="text-3xl md:text-4xl font-bold mb-8 text-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
+          Admin Dashboard
+        </motion.h1>
+        
+        {!isAuthenticated ? (
+          <motion.div 
+            className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg"
+            initial="hidden"
+            animate="visible"
+            variants={slideUp}
           >
-            Login
-          </button>
-        </div>
-      ) : (
-        <div>
-          <h2 className="text-xl mb-4">Registrations</h2>
-          {registrations.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border">
-                <thead>
-                  <tr>
-                    {Object.keys(registrations[0]).filter(key => key !== 'id').map((header) => (
-                      <th key={header} className="py-2 px-4 border-b text-left">
-                        {header.charAt(0).toUpperCase() + header.slice(1)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {registrations.map((registration) => (
-                    <tr key={registration.id}>
-                      {Object.keys(registration).filter(key => key !== 'id').map((key) => (
-                        <td key={key} className="py-2 px-4 border-b">
-                          {String(registration[key])}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <h2 className="text-xl font-semibold mb-6">Administrator Login</h2>
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Admin Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="Enter password"
+              />
             </div>
-          ) : (
-            <p>No registrations found</p>
-          )}
-        </div>
-      )}
-    </div>
+            {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+            <motion.button
+              onClick={handleLogin}
+              className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition-colors duration-300 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Login
+            </motion.button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Registration Data</h2>
+              <p className="text-gray-600 mb-6">
+                Showing all {registrations.length} registrations from participants
+              </p>
+            </div>
+            
+            {registrations.length > 0 ? (
+              <motion.div 
+                className="bg-white rounded-lg shadow-lg overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* Registration Cards instead of a scrollable table */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 p-6">
+                  {registrations.map((registration) => (
+                    <div 
+                      key={registration.id}
+                      className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                    >
+                      <h3 className="font-semibold text-lg mb-4 pb-2 border-b border-gray-200">
+                        {registration.firstName} {registration.lastName}
+                      </h3>
+                      
+                      <div className="space-y-2">
+                        {/* Define the desired field order */}
+                        {[
+                          'firstName', 
+                          'lastName', 
+                          'email', 
+                          'event', 
+                          'eventFee', 
+                          'shirtSize', 
+                          'status',
+                          'paymentStatus', 
+                          'registeredAt', 
+                          'agreeToTerms'
+                        ].filter(key => 
+                          // Only include keys that exist in this registration
+                          key in registration && key !== 'id'
+                        ).map((key) => (
+                          <div key={key} className="flex justify-between items-start">
+                            <span className="text-sm font-medium text-gray-600 capitalize">
+                              {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}:
+                            </span>
+                            <span className="text-sm text-right ml-2">
+                              {typeof registration[key] === 'boolean'
+                                ? (registration[key] ? 'Yes' : 'No')
+                                : key.toLowerCase().includes('time') || key.toLowerCase().includes('date') || key.toLowerCase().includes('at')
+                                  ? formatTimestamp(registration[key])
+                                  : registration[key] !== null && registration[key] !== undefined
+                                    ? String(registration[key])
+                                    : '-'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Summary Stats */}
+                <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-sm font-medium text-gray-600">Total Registrations:</span>
+                      <span className="ml-2 font-semibold">{registrations.length}</span>
+                    </div>
+                    
+                    <motion.button
+                      onClick={() => fetchRegistrations()}
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Refresh
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <div className="text-center py-12 bg-white rounded-lg shadow-lg">
+                <p className="text-gray-500">No registrations found</p>
+              </div>
+            )}
+            
+            <div className="mt-8 flex justify-end">
+              <motion.button
+                onClick={() => setIsAuthenticated(false)}
+                className="px-4 py-2 border border-black text-black rounded-md hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Logout
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <motion.footer 
+        className="text-xs px-6 py-8 text-gray-500 border-t mt-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div>&copy; {new Date().getFullYear()} Strides Over Stigma - Admin Portal</div>
+      </motion.footer>
+    </main>
   );
 }
