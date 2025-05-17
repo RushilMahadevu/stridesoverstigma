@@ -4,6 +4,35 @@ import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { saveRegistration } from "./utils/registration";
 
+// Add this function at the beginning of your component
+const useReducedMotion = () => {
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
+  
+  useEffect(() => {
+    // Check if the user prefers reduced motion
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setShouldReduceMotion(mediaQuery.matches);
+    
+    // Check if device is likely mobile (rough estimation)
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    
+    if (isMobileDevice) {
+      setShouldReduceMotion(true);
+    }
+    
+    const onChange = () => setShouldReduceMotion(mediaQuery.matches);
+    mediaQuery.addEventListener('change', onChange);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', onChange);
+    };
+  }, []);
+  
+  return shouldReduceMotion;
+};
+
 export default function Home() {
   const mapRef = useRef(null);
   
@@ -163,6 +192,8 @@ export default function Home() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <main className="min-h-screen bg-white text-black">
       {/* Header */}
@@ -172,7 +203,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="font-semibold">Strides Over Stigma</div>
+        <div className="font-semibold text-base">Strides Over Stigma</div>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-4">
@@ -185,8 +216,9 @@ export default function Home() {
         
         {/* Mobile Menu Button */}
         <button 
-          className="md:hidden text-black"
+          className="md:hidden text-black p-2 rounded-md hover:bg-gray-100"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,19 +263,22 @@ export default function Home() {
       {/* First Page - Hero Section */}
       <motion.section 
         id="home"
-        className="min-h-screen flex flex-col justify-center items-center pt-20 pb-20 text-center"
+        className="min-h-screen flex flex-col justify-center items-center pt-20 pb-20 text-center px-4"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: false, amount: 0.3 }}
       >
         <motion.h1 
-          className="text-[5rem] md:text-[7rem] font-black leading-none tracking-tight margin-10"
+          className="text-[3.5rem] sm:text-[5rem] md:text-[7rem] font-black leading-none tracking-tight"
           variants={fadeIn}
+          transition={{ 
+            duration: shouldReduceMotion ? 0.3 : 0.8 
+          }}
         >
           STRIDES OVER STIGMA
         </motion.h1>
         <motion.p 
-          className="mt-4 text-sm max-w-md"
+          className="mt-4 text-sm max-w-xs sm:max-w-md mx-auto px-4"
           variants={slideUp}
         >
           Strides Over Stigma is a Reno-based running organization
@@ -392,7 +427,7 @@ export default function Home() {
           Upcoming Events
         </motion.h2>
         <motion.div 
-          className="aspect-video w-full max-w-4xl mx-auto"
+          className="aspect-video w-full max-w-4xl mx-auto h-[300px] md:h-auto"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
@@ -405,6 +440,7 @@ export default function Home() {
             className="rounded-lg border shadow-lg"
             loading="lazy"
             allowFullScreen
+            title="Event Map"
           ></iframe>
         </motion.div>
       </motion.section>
@@ -458,7 +494,7 @@ export default function Home() {
                     id="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-base"
                     required
                   />
                 </div>
@@ -469,7 +505,7 @@ export default function Home() {
                     id="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-base"
                     required
                   />
                 </div>
@@ -481,7 +517,7 @@ export default function Home() {
                   id="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-base"
                   required
                 />
               </div>
@@ -492,7 +528,7 @@ export default function Home() {
                   id="event"
                   value={formData.event}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-base"
                   required
                 >
                   <option value="">Choose an event</option>
@@ -505,7 +541,7 @@ export default function Home() {
                   id="shirtSize"
                   value={formData.shirtSize}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-base"
                   required
                 >
                   <option value="">Select size</option>
@@ -524,7 +560,7 @@ export default function Home() {
                   type="checkbox"
                   checked={formData.agreeToTerms}
                   onChange={handleInputChange}
-                  className="h-4 w-4 mt-1 text-black focus:ring-black border-gray-300 rounded cursor-pointer"
+                  className="h-5 w-5 mt-1 text-black focus:ring-black border-gray-300 rounded cursor-pointer"
                   required
                 />
                 <label htmlFor="agreeToTerms" className="ml-2 text-sm text-gray-700">
