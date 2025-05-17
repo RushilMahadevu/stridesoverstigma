@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { verifyAdminPassword } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'; // Add deleteDoc and doc
 import { db } from '../firebase';
 import { motion } from "framer-motion";
 import Link from 'next/link';
@@ -61,6 +61,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [error, setError] = useState('');
+  const [isDeleting, setIsDeleting] = useState<string | null>(null); // Track which item is being deleted
 
   const handleLogin = () => {
     if (verifyAdminPassword(password)) {
@@ -93,6 +94,30 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Error fetching registrations:', error);
       setError('Failed to load registration data');
+    }
+  };
+
+  // Add this new function to handle deletion
+  const handleDeleteRegistration = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this registration?")) {
+      return;
+    }
+    
+    setIsDeleting(id);
+    
+    try {
+      // Delete the document from Firebase
+      const registrationRef = doc(db, 'registrations', id);
+      await deleteDoc(registrationRef);
+      
+      // Update local state
+      setRegistrations(current => current.filter(reg => reg.id !== id));
+      
+    } catch (error) {
+      console.error("Error deleting registration:", error);
+      setError("Failed to delete registration. Please try again.");
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -196,8 +221,32 @@ export default function AdminPage() {
                   {registrations.map((registration) => (
                     <div 
                       key={registration.id}
-                      className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                      className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 relative"
                     >
+                      {/* Delete Button - positioned in top right */}
+                      <motion.button
+                        onClick={() => handleDeleteRegistration(registration.id)}
+                        className="absolute top-2 right-2 p-2 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50 transition-colors duration-200"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        disabled={isDeleting === registration.id}
+                        aria-label="Delete registration"
+                        title="Delete registration"
+                      >
+                        {isDeleting === registration.id ? (
+                          // Show spinner when deleting
+                          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : (
+                          // Trash icon
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        )}
+                      </motion.button>
+                      
                       <h3 className="font-semibold text-lg mb-4 pb-2 border-b border-gray-200">
                         {registration.firstName} {registration.lastName}
                       </h3>

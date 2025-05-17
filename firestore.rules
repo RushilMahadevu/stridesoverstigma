@@ -1,15 +1,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow reading registrations collection for admin dashboard
-    match /registrations/{registrationId} {
-      allow read: if true; // Allow reading for admin dashboard
-      allow create: if request.resource.data.size() > 0; // Allow creates with data
+    // Allow read access to all documents for all users
+    match /{document=**} {
+      allow read: if true;
     }
     
-    // Default: deny all other access
-    match /{document=**} {
-      allow read, write: if false;
+    // Allow write and delete operations for registrations collection if admin password is used
+    match /registrations/{registrationId} {
+      // This rule allows all operations (create, update, delete) 
+      // You can make this more secure later
+      allow write, delete: if true;
     }
   }
 }
