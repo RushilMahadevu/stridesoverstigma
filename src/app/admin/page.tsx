@@ -2,10 +2,16 @@
 
 import { useState } from 'react';
 import { verifyAdminPassword } from '../firebase';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'; // Add deleteDoc and doc
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion } from "framer-motion";
 import Link from 'next/link';
+// Import Chart.js components
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // Define a type for registration data
 interface Registration {
@@ -119,6 +125,133 @@ export default function AdminPage() {
     } finally {
       setIsDeleting(null);
     }
+  };
+
+  // Analytics data preparation functions
+  const prepareShirtSizeData = () => {
+    const sizes: Record<string, number> = {};
+    registrations.forEach(reg => {
+      if (reg.shirtSize) {
+        sizes[reg.shirtSize as string] = (sizes[reg.shirtSize as string] || 0) + 1;
+      }
+    });
+    
+    return {
+      labels: Object.keys(sizes),
+      datasets: [
+        {
+          label: 'Shirt Sizes',
+          data: Object.values(sizes),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  const prepareEventData = () => {
+    const events: Record<string, number> = {};
+    registrations.forEach(reg => {
+      if (reg.event) {
+        events[reg.event as string] = (events[reg.event as string] || 0) + 1;
+      }
+    });
+    
+    return {
+      labels: Object.keys(events),
+      datasets: [
+        {
+          label: 'Event Registration Count',
+          data: Object.values(events),
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  const preparePaymentStatusData = () => {
+    const statuses = { Paid: 0, Pending: 0, 'Not Paid': 0 };
+    
+    registrations.forEach(reg => {
+      const status = reg.paymentStatus || 'Not Specified';
+      if (status === 'paid') statuses['Paid']++;
+      else if (status === 'pending') statuses['Pending']++;
+      else statuses['Not Paid']++;
+    });
+    
+    return {
+      labels: Object.keys(statuses),
+      datasets: [
+        {
+          label: 'Payment Status',
+          data: Object.values(statuses),
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 99, 132, 0.6)',
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(255, 99, 132, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  const prepareRegistrationTimelineData = () => {
+    // Group registrations by date
+    const dateGroups: Record<string, number> = {};
+    registrations.forEach(reg => {
+      if (reg.registeredAt) {
+        let date: string;
+        // Handle Firebase Timestamp objects
+        if (typeof reg.registeredAt === 'object' && 'seconds' in reg.registeredAt) {
+          date = new Date((reg.registeredAt as FirebaseTimestamp).seconds * 1000).toLocaleDateString();
+        } else if (typeof reg.registeredAt === 'string') {
+          date = new Date(reg.registeredAt).toLocaleDateString();
+        } else {
+          return; // Skip if date format is not supported
+        }
+        
+        dateGroups[date] = (dateGroups[date] || 0) + 1;
+      }
+    });
+    
+    // Sort dates
+    const sortedDates = Object.keys(dateGroups).sort((a, b) => 
+      new Date(a).getTime() - new Date(b).getTime()
+    );
+    
+    return {
+      labels: sortedDates,
+      datasets: [
+        {
+          label: 'Registrations per Day',
+          data: sortedDates.map(date => dateGroups[date]),
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
   };
 
   // Animation variants
@@ -287,6 +420,98 @@ export default function AdminPage() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Analytics Section */}
+                <motion.div 
+                  className="mt-8 p-6 bg-white border-t border-gray-200"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <h3 className="text-xl font-semibold mb-6">Registration Analytics</h3>
+                  
+                  {registrations.length > 0 ? (
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Shirt Size Pie Chart */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h4 className="font-medium text-gray-800 mb-4">Shirt Size Distribution</h4>
+                        <div className="h-64">
+                          <Pie data={prepareShirtSizeData()} options={{ 
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: {
+                                position: 'right',
+                              }
+                            }
+                          }} />
+                        </div>
+                      </div>
+                      
+                      {/* Event Registration Bar Chart */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h4 className="font-medium text-gray-800 mb-4">Event Registration Counts</h4>
+                        <div className="h-64">
+                          <Bar data={prepareEventData()} options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: {
+                                display: false
+                              }
+                            },
+                            scales: {
+                              y: {
+                                beginAtZero: true,
+                                ticks: {
+                                  precision: 0
+                                }
+                              }
+                            }
+                          }} />
+                        </div>
+                      </div>
+                      
+                      {/* Payment Status Pie Chart */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h4 className="font-medium text-gray-800 mb-4">Payment Status</h4>
+                        <div className="h-64">
+                          <Pie data={preparePaymentStatusData()} options={{ 
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: {
+                                position: 'right',
+                              }
+                            }
+                          }} />
+                        </div>
+                      </div>
+                      
+                      {/* Timeline Bar Chart */}
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h4 className="font-medium text-gray-800 mb-4">Registration Timeline</h4>
+                        <div className="h-64">
+                          <Bar data={prepareRegistrationTimelineData()} options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: {
+                                display: false
+                              }
+                            },
+                            scales: {
+                              y: {
+                                beginAtZero: true,
+                                ticks: {
+                                  precision: 0
+                                }
+                              }
+                            }
+                          }} />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No data available for analytics</p>
+                  )}
+                </motion.div>
                 
                 {/* Summary Stats */}
                 <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
