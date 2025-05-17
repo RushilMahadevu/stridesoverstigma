@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { saveRegistration } from "./utils/registration";
 
@@ -215,10 +215,11 @@ export default function Home() {
         </nav>
         
         {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden text-black p-2 rounded-md hover:bg-gray-100"
+        <motion.button 
+          className="md:hidden text-black p-2 rounded-md hover:bg-gray-100 focus:outline-none"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          whileTap={{ scale: 0.95 }}
         >
           {mobileMenuOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -229,7 +230,7 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
-        </button>
+        </motion.button>
         
         {/* Contact Info */}
         <div className="hidden md:flex flex-col items-end">
@@ -243,22 +244,89 @@ export default function Home() {
       </motion.header>
 
       {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-white z-20 pt-16 px-6 md:hidden">
-          <nav className="flex flex-col space-y-6 text-center text-lg">
-            <a href="#home" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Home</a>
-            <a href="#mission" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Mission</a>
-            <a href="#events" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Events</a>
-            <a href="#registration" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">Register</a>
-            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:bg-gray-100 rounded">About</a>
-            
-            <div className="pt-6 border-t border-gray-200">
-              <a href="mailto:stridesoverstigma@gmail.com" className="block py-2">stridesoverstigma@gmail.com</a>
-              <a href="https://www.instagram.com/strides.over.stigma/" target="_blank" rel="noopener noreferrer" className="block py-2">@strides.over.stigma</a>
-            </div>
-          </nav>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            className="fixed inset-0 bg-white z-20 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            {/* Close Button (X) - Positioned in top-right corner */}
+            <motion.button
+              onClick={() => setMobileMenuOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 focus:outline-none"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.2 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </motion.button>
+
+            <motion.nav 
+              className="flex flex-col space-y-6 text-center text-lg pt-20 px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Staggered menu items */}
+              {["Home", "Mission", "Events", "Register", "About"].map((item, i) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2 hover:bg-gray-100 rounded"
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: 0.1 + i * 0.05,  // Stagger effect
+                    duration: 0.2
+                  }}
+                >
+                  {item}
+                </motion.a>
+              ))}
+              
+              <motion.div 
+                className="pt-6 border-t border-gray-200"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <motion.a 
+                  href="mailto:stridesoverstigma@gmail.com" 
+                  className="block py-2"
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
+                >
+                  stridesoverstigma@gmail.com
+                </motion.a>
+                <motion.a 
+                  href="https://www.instagram.com/strides.over.stigma/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="block py-2"
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.3 }}
+                >
+                  @strides.over.stigma
+                </motion.a>
+              </motion.div>
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* First Page - Hero Section */}
       <motion.section 
