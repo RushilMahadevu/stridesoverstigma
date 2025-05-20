@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Strides Over Stigma",
-  description: "A Reno-based nonprofit running organization connecting mental health awareness with community running events. Founded by Sage Ridge School students to break down mental health stigmas.",
+  description: "A Reno-based running organization connecting mental health awareness with community running events. Founded by Sage Ridge School students to break down mental health stigmas.",
   keywords: ["running", "mental health", "Reno", "nonprofit", "community", "stigma", "awareness", "Sage Ridge School"],
   authors: [{ name: "Rushil Mahadevu" }, { name: "Rhys Ferrito" }],
   creator: "Strides Over Stigma",

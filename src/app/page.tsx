@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { saveRegistration } from "./utils/registration";
+import Image from "next/image";
 
 // Add this function at the beginning of your component
 const useReducedMotion = () => {
@@ -704,14 +705,36 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-6">Our Team</h3>
               <div className="grid grid-cols-2 gap-10">
                 <div className="text-center">
-                  <div className="w-32 h-32 mx-auto mb-3 rounded-full bg-gray-200"></div>
-                  <h4 className="font-medium text-lg">Rushil Mahadevu</h4>
-                  <p className="text-sm text-gray-600">Co-Founder</p>
+                  <a href="https://www.instagram.com/rushil.mahadevu/" target="_blank" rel="noopener noreferrer" className="block group">
+                    <div className="w-32 h-32 mx-auto mb-3 rounded-full overflow-hidden relative  transition-all">
+                      <Image 
+                        src="/images/rushil.jpg" 
+                        alt="Rushil Mahadevu" 
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="128px"
+                        priority
+                      />
+                    </div>
+                    <h4 className="font-medium text-lg group-hover:underline">Rushil Mahadevu</h4>
+                    <p className="text-sm text-gray-600">Co-Founder & Chief Technology Officer (CTO)</p>
+                  </a>
                 </div>
                 <div className="text-center">
-                  <div className="w-32 h-32 mx-auto mb-3 rounded-full bg-gray-200"></div>
-                  <h4 className="font-medium text-lg">Rhys Ferrito</h4>
-                  <p className="text-sm text-gray-600">Co-Founder</p>
+                  <a href="https://www.instagram.com/rhysferrito/" target="_blank" rel="noopener noreferrer" className="block group">
+                    <div className="w-32 h-32 mx-auto mb-3 rounded-full overflow-hidden relative transition-all">
+                      <Image  
+                        src="/images/rhys.jpg" 
+                        alt="Rhys Ferrito" 
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="128px"
+                        priority
+                      />
+                    </div>
+                    <h4 className="font-medium text-lg group-hover:underline">Rhys Ferrito</h4>
+                    <p className="text-sm text-gray-600">Co-Founder & Chief Marketing Officer (CMO)</p>
+                  </a>
                 </div>
               </div>
             </motion.div>
