@@ -212,6 +212,7 @@ export default function Home() {
           <a href="#mission" className="hover:underline transition-colors duration-200">Mission</a>
           <a href="#events" className="hover:underline transition-colors duration-200">Events</a>
           <a href="#registration" className="hover:underline transition-colors duration-200">Register</a>
+          <a href="#stories" className="hover:underline transition-colors duration-200">Stories</a>
           <a href="#about" className="hover:underline transition-colors duration-200">About</a>
         </nav>
         
@@ -259,7 +260,7 @@ export default function Home() {
               onClick={() => setMobileMenuOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 focus:outline-none"
               whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 9 }}
               aria-label="Close menu"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -277,7 +278,7 @@ export default function Home() {
               transition={{ duration: 0.3 }}
             >
               {/* Staggered menu items */}
-              {["Home", "Mission", "Events", "Register", "About"].map((item, i) => (
+              {["Home", "Mission", "Events", "Register", "Stories", "About"].map((item, i) => (
                 <motion.a
                   key={item}
                   href={`#${item.toLowerCase()}`}
@@ -656,6 +657,120 @@ export default function Home() {
           </div>
         </motion.div>
       </motion.section>
+      {/* Your Stories Section */}
+      <motion.section
+        id="stories"
+        className="min-h-screen px-6 flex flex-col justify-center items-center py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 1 }}
+      >
+        <motion.div
+          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Your Stories</h2>
+          
+          <p className="text-center text-lg mb-10 max-w-2xl mx-auto">
+            Real stories from real runners about how movement has impacted their mental health journey.
+          </p>
+          
+          {/* Story Cards Container */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            {/* Example Story Cards - You can replace these with real stories later */}
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gray-800 mr-4 flex items-center justify-center text-white font-bold text-xl">
+                  K
+                </div>
+                <div>
+                  <h4 className="font-medium">
+                    <a 
+                      href="https://www.instagram.com/mrkingrichy/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      King Richardson
+                    </a>
+                  </h4>
+                  <p className="text-sm text-gray-600">Runner & Community Member</p>
+                </div>
+              </div>
+              <p className="text-gray-700 italic mb-4">
+                &quot;Running made me start to learn the beauty we have all around us -- whether it be the beautiful nature, or the ones that support you through every step you take.&quot;
+              </p>
+            </motion.div>
+            
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gray-800 mr-4 flex items-center justify-center text-white font-bold text-xl">
+                  R
+                </div>
+                <div>
+                  <h4 className="font-medium">
+                    <a 
+                      href="https://www.instagram.com/byee.tuesday/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      Ruby Snook
+                    </a>
+                  </h4>
+                  <p className="text-sm text-gray-600">Runner & Community Member</p>
+                </div>
+              </div>
+              <p className="text-gray-700 italic mb-4">
+                &quot;Running helped me realize that I can&apos;t control everything but I can control how I react and cope with issues that happen in my daily life. Running helps me take a breather and reflect.&quot;
+              </p>
+            </motion.div>
+          </div>
+          
+          {/* Story Submission CTA */}
+          <motion.div
+            className="bg-gray-50 p-8 rounded-lg shadow-md text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <h3 className="text-xl font-semibold mb-4">Share Your Story</h3>
+            <p className="mb-6 max-w-2xl mx-auto">
+              We&apos;re collecting real stories to show how running has helped people cope, grow, or heal mentally. 
+              We&apos;d love to share your experience to help others see the power in each stride.
+            </p>
+            <p className="mb-6 text-gray-700">
+              If you&apos;ve ever felt a mental boost from a run whether it cleared your mind, eased anxiety, or brought you peace, your 
+              story could inspire someone else to lace up and find healing too.
+            </p>
+            <motion.a
+              href="mailto:stridesoverstigma@gmail.com?subject=My Running Story"
+              className="border border-black px-6 py-3 rounded-full text-sm bg-black text-white hover:bg-white hover:text-black transition-colors duration-300 inline-block"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Submit Your Story
+            </motion.a>
+          </motion.div>
+        </motion.div>
+      </motion.section>
       {/* About Us Section */}
       <motion.section
         id="about"
@@ -711,7 +826,7 @@ export default function Home() {
                         src="/images/rushil.jpg" 
                         alt="Rushil Mahadevu" 
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover group-hover:scale-1 transition-transform duration-300"
                         sizes="128px"
                         priority
                       />
