@@ -496,22 +496,42 @@ export default function Home() {
         >
           Upcoming Events
         </motion.h2>
-        <motion.div 
-          className="aspect-video w-full max-w-4xl mx-auto h-[300px] md:h-auto"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+        
+        <motion.div
+          className="mb-8 max-w-4xl w-full"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8 }}
         >
-          <iframe
-            src="https://www.google.com/maps/d/embed?mid=1_96yAMSFkTecAfB4yWLrvKUIIx0N0PI&ehbc=2E312F&noprof=1"
-            width="100%"
-            height="100%"
-            className="rounded-lg border shadow-lg"
-            loading="lazy"
-            allowFullScreen
-            title="Event Map"
-          ></iframe>
+          <div className="bg-white p-8 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4">Strides Over Stigma - Wetlands 5K</h3>
+            <p className="text-gray-700 mb-4"><strong>Projected Date:</strong> Friday, September 6, 2025</p>
+            <p className="text-gray-700 mb-8">
+              A community run/walk at Damonte Ranch Wetlands focused on mental health awareness. This family-friendly event welcomes participants of all fitness levels. Projected to be $15.
+            </p>
+            
+            <div className="aspect-video w-full h-[250px] md:h-[400px] mb-10">
+              <iframe
+                src="https://www.google.com/maps/d/embed?mid=1_96yAMSFkTecAfB4yWLrvKUIIx0N0PI&ehbc=2E312F&noprof=1"
+                width="100%"
+                height="100%"
+                className="rounded-md border border-gray-200"
+                loading="lazy"
+                allowFullScreen
+                title="Event Map"
+              ></iframe>
+            </div>
+            
+            <div className="text-center mt-8">
+              <a 
+                href="#registration" 
+                className="border border-black px-8 py-4 rounded-full text-sm bg-white text-black hover:bg-black hover:text-white transition-colors duration-300 inline-block"
+              >
+                Register Now
+              </a>
+            </div>
+          </div>
         </motion.div>
       </motion.section>
 
@@ -602,7 +622,7 @@ export default function Home() {
                   required
                 >
                   <option value="">Choose an event</option>
-                  <option value="5k">Wetlands 5K - Date Coming Soon!</option>
+                  <option value="5k">SOS - Wetlands 5K: Projected Friday, September 6, 2025</option>
                 </select>
               </div>
               <div>
@@ -650,9 +670,9 @@ export default function Home() {
             </form>
           
             <p className="mt-6 text-sm text-gray-600">
-              Registration fee: <span className="italic">To be announced</span>
+              Registration fee: <span className="italic">Projected to be $15</span>
               <br />
-              All proceeds support mental health awareness programs.
+              All are welcome to participate.
             </p>
           </div>
         </motion.div>
@@ -826,7 +846,7 @@ export default function Home() {
                         src="/images/rushil.jpg" 
                         alt="Rushil Mahadevu" 
                         fill
-                        className="object-cover group-hover:scale-1 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="128px"
                         priority
                       />

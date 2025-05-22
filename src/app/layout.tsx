@@ -21,14 +21,22 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Strides Over Stigma",
     description: "Breaking down mental health stigmas through running and community",
-    url: "https://stridesoverstigma.web.app",
+    url: "https://stridesoverstigma.com",
     siteName: "Strides Over Stigma",
     locale: "en_US",
     type: "website",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: '/favicon.ico', sizes: "any" },
+      { url: '/favicon-96x96.png', sizes: '96x96' },
+      { url: '/favicon-192x192.png', sizes: '192x192' },
+      { url: '/favicon-512x512.png', sizes: '512x512' }
+    ],
+    shortcut: { url: '/favicon.ico' },
+    apple: { url: '/favicon-192x192.png' }
   },
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
