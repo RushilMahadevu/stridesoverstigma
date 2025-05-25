@@ -128,7 +128,7 @@ export default function Home() {
       let eventFee = 0;
       switch (formData.event) {
         case "5k":
-          eventFee = 0;
+          eventFee = 10;
           break;
         // case "10k":
         //   eventFee = 45;
@@ -504,32 +504,42 @@ export default function Home() {
           viewport={{ once: false }}
           transition={{ duration: 0.8 }}
         >
-          <div className="bg-white p-8 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Strides Over Stigma - Wetlands 5K</h3>
-            <p className="text-gray-700 mb-4"><strong>Projected Date:</strong> Friday, September 6, 2025</p>
-            <p className="text-gray-700 mb-8">
-              A community run/walk at Damonte Ranch Wetlands focused on mental health awareness. This family-friendly event welcomes participants of all fitness levels. Projected to be $15.
-            </p>
+          <div className="bg-white p-5 sm:p-8 rounded-lg shadow-lg border-2 border-gray-200 hover:border-black transition-colors duration-300">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 sm:mb-6">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-left">Strides Over Stigma - Wetlands 5K</h3>
+                <p className="text-gray-700 mb-2 text-left text-sm sm:text-base"><strong>Projected Date:</strong> Friday, September 6, 2025</p>
+              </div>
+              <span className="mt-2 md:mt-0 px-3 py-1 bg-black text-white rounded-full text-xs sm:text-sm inline-block self-start md:self-auto">
+                5K Run/Walk
+              </span>
+            </div>
             
-            <div className="aspect-video w-full h-[250px] md:h-[400px] mb-10">
+            <div className="aspect-video w-full h-[200px] sm:h-[250px] md:h-[400px] mb-5 sm:mb-10 overflow-hidden rounded-md border-2 border-gray-300 shadow-md">
               <iframe
                 src="https://www.google.com/maps/d/embed?mid=1_96yAMSFkTecAfB4yWLrvKUIIx0N0PI&ehbc=2E312F&noprof=1"
                 width="100%"
                 height="100%"
-                className="rounded-md border border-gray-200"
+                className="rounded-md"
                 loading="lazy"
                 allowFullScreen
                 title="Event Map"
               ></iframe>
             </div>
             
-            <div className="text-center mt-8">
-              <a 
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
+              <div className="text-left w-full md:w-auto">
+                <p className="text-gray-800 font-medium text-sm sm:text-base">Damonte Ranch Wetlands, Reno</p>
+                <p className="text-gray-600 text-xs sm:text-sm">All ages and fitness levels welcome</p>
+              </div>
+              <motion.a 
                 href="#registration" 
-                className="border border-black px-8 py-4 rounded-full text-sm bg-white text-black hover:bg-black hover:text-white transition-colors duration-300 inline-block"
+                className="border-2 border-black px-4 sm:px-8 py-2 sm:py-3 rounded-full text-xs sm:text-sm bg-black text-white hover:bg-white hover:text-black transition-colors duration-300 inline-block w-full md:w-auto text-center mt-2 md:mt-0"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Register Now
-              </a>
+              </motion.a>
             </div>
           </div>
         </motion.div>
