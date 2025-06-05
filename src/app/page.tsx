@@ -3,9 +3,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { saveRegistration } from "./utils/registration";
+import { useScroll } from "framer-motion";
 import Image from "next/image";
 
-// Add this function at the beginning of your component
+// Custom hook to check for reduced motion preference
 const useReducedMotion = () => {
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
   
@@ -36,7 +37,9 @@ const useReducedMotion = () => {
 
 export default function Home() {
   const mapRef = useRef(null);
-  
+  // For scroll progress bar
+  const { scrollYProgress } = useScroll();
+
   // Add smooth scrolling with CSS
   useEffect(() => {
     // Add scroll-behavior: smooth to html element
@@ -329,6 +332,17 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      { /* Scroll Progress Bar */}
+      <motion.div 
+        className="fixed top-[72px] left-0 h-1 bg-black z-50"
+        style={{
+          scaleX: scrollYProgress,
+          transformOrigin: "0%",
+          width: "100%",
+          opacity: shouldReduceMotion ? 0 : 1
+        }}
+      />
 
       {/* First Page - Hero Section */}
       <motion.section 
@@ -339,7 +353,7 @@ export default function Home() {
         viewport={{ once: false, amount: 0.3 }}
       >
         <motion.h1 
-          className="text-[3.5rem] sm:text-[5rem] md:text-[7rem] font-black leading-none tracking-tight"
+          className="text-[3.5rem] sm:text-[5rem] md:text-[8rem] font-black leading-none tracking-tight"
           variants={fadeIn}
           transition={{ 
             duration: shouldReduceMotion ? 0.3 : 0.8 
@@ -538,6 +552,7 @@ export default function Home() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
+                
                 Register Now
               </motion.a>
             </div>
